@@ -21,4 +21,4 @@ A library for manipulating with proofs based on inference rules.
 
 For further information see: 
 
-https://github.com/liveontologies/puli 
+https://github.com/marnadir/puli.git 
