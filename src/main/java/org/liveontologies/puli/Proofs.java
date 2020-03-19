@@ -187,19 +187,19 @@ public class Proofs {
 	 *         derivable using the given inferences; i.e., every derivation
 	 *         using the inferences must use at least one essential conclusion
 	 */
-	public static <C, I extends Inference<? extends C>> Set<C> getEssentialConclusions(
-			Proof<I> proof, C goal) {
+	public static <C, I extends Inference<? extends C>> Set<C> getEssential(Proof<? extends I> proof,
+			C goal,Set<C> ontology) {
+		
 		Set<C> result = new HashSet<C>();
-		DerivabilityCheckerWithBlocking<C, I> checker = new InferenceDerivabilityChecker<C, I>(
-				proof);
-		for (C candidate : unfoldRecursively(proof, goal,
-				Producer.Dummy.<I> get())) {
+		for (C candidate : ontology) {
+			DerivabilityCheckerWithBlocking<C,I> checker = new InferenceDerivabilityChecker<C, I>(proof);
 			checker.block(candidate);
 			if (!checker.isDerivable(goal)) {
 				result.add(candidate);
 			}
 			checker.unblock(candidate);
 		}
+
 		return result;
 	}
 
@@ -232,8 +232,8 @@ public class Proofs {
 	 * @see Inferences#isAsserted(Inference)
 	 */
 	public static <I extends Inference<?>> Proof<I> prune(
-			Proof<? extends I> proof, Object goal) {
-		return new PrunedProof<I>(proof, goal);
+			Proof<? extends I> proof, Object goal,Set<Object> ontology) {
+		return new PrunedProof<I>(proof, goal,ontology);
 	}
 
 	/**

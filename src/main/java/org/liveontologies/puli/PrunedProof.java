@@ -21,23 +21,29 @@
  */
 package org.liveontologies.puli;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+
 public class PrunedProof<I extends Inference<?>>
 		extends DelegatingProof<I, Proof<? extends I>>
 		implements Proof<I>, Producer<I> {
 
 	private final Map<Object, I> expanded_ = new HashMap<Object, I>();
+	private Set<Object> essential;
 
-	public PrunedProof(Proof<? extends I> delegate, Object goal) {
+	public PrunedProof(Proof<? extends I> delegate, Object goal,Set<Object>ontology) {
 		super(delegate);
-		Set<Object> essential = Proofs.getEssentialConclusions(delegate, goal);
-		Proofs.expand(essential, Proofs.removeAssertedInferences(delegate),
+		essential = Proofs.getEssential(delegate, goal,ontology);
+		Proofs.expand(essential,Proofs.removeAssertedInferences(delegate),
 				goal, this);
+	
 	}
 
 	@Override
@@ -54,5 +60,15 @@ public class PrunedProof<I extends Inference<?>>
 		// else
 		return Collections.singleton(inf);
 	}
+
+	public Map<Object, I> getExpanded_() {
+		return expanded_;
+	}
+	
+	public Set<Object> getEssential() {
+		return essential;
+	}
+	
+	
 
 }
