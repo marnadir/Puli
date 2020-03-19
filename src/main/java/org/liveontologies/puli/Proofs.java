@@ -218,6 +218,20 @@ public class Proofs {
 			Producer<? super I> producer) {
 		InferenceExpander.expand(derivable, proof, goal, producer);
 	}
+	
+	/**
+	 * Detect all inferences which create a cycle derivation for proving the
+	 * given goal; produces the applied inferences using the given producer
+	 * 
+	 * @param derivable
+	 * @param proof
+	 * @param goal
+	 * @param producer
+	 */	
+	public static <C, I extends Inference<? extends C>> void detectCycle(Proof<? extends I> proof, C goal,
+			Producer<? super I> producer) {
+		InferenceCycle.detectCycle(proof, goal, producer);
+	}
 
 	/**
 	 * @param proof
@@ -236,6 +250,24 @@ public class Proofs {
 		return new PrunedProof<I>(proof, goal,ontology);
 	}
 
+	/**
+	 * @param proof
+	 * @param goal
+	 * @return a proof obtained from the given proofs by removing cycles
+	 *         inferences that do not have effect on the derivation relation
+	 *         between the asserted conclusions in the proof (derived by
+	 *         asserted inferences) and the goal conclusion; i.e., if the goal
+	 *         conclusion was derivable from some subset of asserted conclusions
+	 *         using original inferences, then it is also derivable using the
+	 *         returned proof
+	 * @see Inferences#isAsserted(Inference)
+	 */
+	
+	public static <C, I extends Inference<? extends C>> Proof<I> pruneCycle
+	(Proof<I> proof, C goal,Set<Object> ontology) {
+		return new PrunedProofCycle<I>(proof, goal,ontology);
+	}
+	
 	/**
 	 * Recursively prints all inferences for the derived goal and the premises
 	 * of such inferences to the standard output using ASCII characters. Due to
