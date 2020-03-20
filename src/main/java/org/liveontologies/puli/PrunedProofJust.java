@@ -1,10 +1,12 @@
+package org.liveontologies.puli;
+
 /*-
  * #%L
  * Proof Utility Library
  * $Id:$
  * $HeadURL:$
  * %%
- * Copyright (C) 2014 - 2017 Live Ontologies Project
+ * Copyright (C) 2014 - 2020 Live Ontologies Project
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,30 +21,35 @@
  * limitations under the License.
  * #L%
  */
-package org.liveontologies.puli;
+
+
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
-public class PrunedProof<I extends Inference<?>>
+
+public class PrunedProofJust<I extends Inference<?>>
 		extends DelegatingProof<I, Proof<? extends I>>
 		implements Proof<I>, Producer<I> {
 
-	private final Map<Object, I> expanded_ = new HashMap<Object, I>();
-	private Set<Object> essential;
-
-	public PrunedProof(Proof<? extends I> delegate, Object goal,Set<Object>ontology) {
-		super(delegate);
-		essential = Proofs.getEssential(delegate, goal,ontology);
-		Proofs.expand(essential,Proofs.removeAssertedInferences(delegate),
-				goal, this);
 	
+	
+	private final Multimap<Object, I> expanded_ = ArrayListMultimap
+			.create();
+	
+
+	public PrunedProofJust(Proof<? extends I> delegate, Object goal,Set<Object> justUnion) {
+		super(delegate);	
+		Proofs.expand(justUnion,Proofs.removeAssertedInferences(delegate),
+		goal, this);
+		cuteInferences(delegate,justUnion);
+		
 	}
 
+	
 	@Override
 	public void produce(I inf) {
 		expanded_.put(inf.getConclusion(), inf);
@@ -50,22 +57,24 @@ public class PrunedProof<I extends Inference<?>>
 
 	@Override
 	public Collection<? extends I> getInferences(Object conclusion) {
-		I inf = expanded_.get(conclusion);
-		if (inf == null) {
+		Collection<? extends I> infs = expanded_.get(conclusion);
+		// multimap return 0 if the empty collection if the key is not present
+		if (infs.size()==0) {
 			return super.getInferences(conclusion);
 		}
 		// else
-		return Collections.singleton(inf);
+		return infs;
 	}
+	
+	void cuteInferences(Proof<? extends I> proof_,Set<Object> justUnion) {
+		for(Object just:justUnion) {
+			for (I inf : proof_.getInferences(just)) {
+				if(justUnion.containsAll(inf.getPremises())) {
+					produce(inf);
+				}
+			}
 
-	public Map<Object, I> getExpanded_() {
-		return expanded_;
+		}
 	}
 	
-	public Set<Object> getEssential() {
-		return essential;
-	}
-	
-	
-
 }

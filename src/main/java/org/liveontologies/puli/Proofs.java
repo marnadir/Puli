@@ -114,7 +114,19 @@ public class Proofs {
 			final Proof<? extends I> proof, final Set<?> assertedConclusions) {
 		return new RemoveAssertedProof<I>(proof, assertedConclusions);
 	}
-
+	/**
+	 * @param proof
+	 * @param assertedConclusions
+	 * @return the {@link Proof} that has all inferences of the given
+	 *         {@link Proof} except for the asserted inferences (inferences for
+	 *         which {@link Inferences#isAsserted(Inference)} returns
+	 *         {@code false}), whose conclusions are not in the given set.
+	 */
+	public static <C,I extends Inference<? extends C>> Proof<I> removeNotJust(final Proof<? extends I> proof,
+			final Set<C> axiomsNotJust,final Set<C> ontology) {
+		return new RemoveNotJust<C,I>(proof, axiomsNotJust, ontology);
+	}
+	
 	/**
 	 * @param proof
 	 * @return {@link DynamicProof} that caches all
@@ -218,6 +230,7 @@ public class Proofs {
 			Producer<? super I> producer) {
 		InferenceExpander.expand(derivable, proof, goal, producer);
 	}
+	
 	
 	/**
 	 * Detect all inferences which create a cycle derivation for proving the
