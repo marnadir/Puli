@@ -37,27 +37,31 @@ public class PrunedProofJust<I extends Inference<?>>
 
 	
 	
-	private final Multimap<Object, I> expanded_ = ArrayListMultimap
+	private final Multimap<Object, I> expandedJust_ = ArrayListMultimap
 			.create();
-	
+	private Set<Object> essentialAxiom;
+	private Set<Object> justUnion;
 
 	public PrunedProofJust(Proof<? extends I> delegate, Object goal,Set<Object> justUnion) {
-		super(delegate);	
+		super(delegate);
+		this.justUnion=justUnion;
 		Proofs.expand(justUnion,Proofs.removeAssertedInferences(delegate),
-		goal, this);
+				goal, this);
+		expandedJust_.clear(); //not neccessary
 		cuteInferences(delegate,justUnion);
-		
 	}
 
 	
+	
+	
 	@Override
 	public void produce(I inf) {
-		expanded_.put(inf.getConclusion(), inf);
+		expandedJust_.put(inf.getConclusion(), inf);
 	}
 
 	@Override
 	public Collection<? extends I> getInferences(Object conclusion) {
-		Collection<? extends I> infs = expanded_.get(conclusion);
+		Collection<? extends I> infs = expandedJust_.get(conclusion);
 		// multimap return 0 if the empty collection if the key is not present
 		if (infs.size()==0) {
 			return super.getInferences(conclusion);
@@ -65,6 +69,21 @@ public class PrunedProofJust<I extends Inference<?>>
 		// else
 		return infs;
 	}
+
+
+
+	public Set<Object> getEssentialAxiom() {
+		return essentialAxiom;
+	}
+
+	public Set<Object> getEssential() {
+		return justUnion;
+	}
+
+	public Multimap<Object, I> getExpandedJust_() {
+		return expandedJust_;
+	}
+	
 	
 	void cuteInferences(Proof<? extends I> proof_,Set<Object> justUnion) {
 		for(Object just:justUnion) {
@@ -76,5 +95,5 @@ public class PrunedProofJust<I extends Inference<?>>
 
 		}
 	}
-	
+
 }

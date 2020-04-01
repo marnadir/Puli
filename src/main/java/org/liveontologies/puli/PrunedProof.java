@@ -28,14 +28,14 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class PrunedProof<I extends Inference<?>>
+public class PrunedProof<C,I extends Inference<? extends C>>
 		extends DelegatingProof<I, Proof<? extends I>>
 		implements Proof<I>, Producer<I> {
 
 	private final Map<Object, I> expanded_ = new HashMap<Object, I>();
-	private Set<Object> essential;
+	private Set<C> essential;
 
-	public PrunedProof(Proof<? extends I> delegate, Object goal,Set<Object>ontology) {
+	public PrunedProof(Proof<? extends I> delegate, C goal,Set<C>ontology) {
 		super(delegate);
 		essential = Proofs.getEssential(delegate, goal,ontology);
 		Proofs.expand(essential,Proofs.removeAssertedInferences(delegate),
@@ -62,7 +62,7 @@ public class PrunedProof<I extends Inference<?>>
 		return expanded_;
 	}
 	
-	public Set<Object> getEssential() {
+	public Set<C> getEssential() {
 		return essential;
 	}
 	

@@ -30,17 +30,17 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 
-public class PrunedProofCycle<I extends Inference<?>>
+public class PrunedProofCycle<C,I extends Inference<?>>
 		extends DelegatingProof<I, Proof<? extends I>>
 		implements Proof<I>, Producer<I> {
 
 	private final Multimap<Object, I> expandedJust_ = ArrayListMultimap
 			.create();
-	private Set<Object> essential;
+	private Set<C> essential;
 	private Set<I> infC_=new HashSet<I>();
 
 
-	public PrunedProofCycle(Proof<? extends I> delegate, Object goal,Set<Object> ontology) {
+	public PrunedProofCycle(Proof<? extends I> delegate, Object goal,Set<C> ontology) {
 		super(delegate);	
 		Proofs.detectCycle(delegate, goal, this);
 		
@@ -62,7 +62,7 @@ public class PrunedProofCycle<I extends Inference<?>>
 	}
 
 	
-	public Set<Object> getEssential() {
+	public Set<C> getEssential() {
 		return essential;
 	}
 

@@ -258,9 +258,9 @@ public class Proofs {
 	 *         returned proof
 	 * @see Inferences#isAsserted(Inference)
 	 */
-	public static <I extends Inference<?>> Proof<I> prune(
-			Proof<? extends I> proof, Object goal,Set<Object> ontology) {
-		return new PrunedProof<I>(proof, goal,ontology);
+	public static <C,I extends Inference<? extends C>> Proof<I> prune(
+			Proof<? extends I> proof, C goal,Set<C> ontology) {
+		return new PrunedProof<C,I>(proof, goal,ontology);
 	}
 
 	/**
@@ -277,8 +277,14 @@ public class Proofs {
 	 */
 	
 	public static <C, I extends Inference<? extends C>> Proof<I> pruneCycle
-	(Proof<I> proof, C goal,Set<Object> ontology) {
-		return new PrunedProofCycle<I>(proof, goal,ontology);
+	(Proof<I> proof, C goal,Set<C> ontology) {
+		return new PrunedProofCycle<C,I>(proof, goal,ontology);
+	}
+	
+	
+	public static <C, I extends Inference<? extends C>> Proof<I> pruneFromJustifications
+	(Proof<I> proof, C goal,Set<Object> justifications) {
+		return new PrunedProofJust<I>(proof, goal,justifications);
 	}
 	
 	/**
