@@ -37,7 +37,7 @@ public class PrunedProof<C,I extends Inference<? extends C>>
 
 	public PrunedProof(Proof<? extends I> delegate, C goal,Set<C>ontology) {
 		super(delegate);
-		essential = Proofs.getEssential(delegate, goal,ontology);
+		essential = Proofs.getEssentialAxioms(delegate, goal,ontology);
 		Proofs.expand(essential,Proofs.removeAssertedInferences(delegate),
 				goal, this);
 	

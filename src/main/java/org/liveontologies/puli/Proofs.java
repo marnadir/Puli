@@ -195,16 +195,18 @@ public class Proofs {
 	/**
 	 * @param proof
 	 * @param goal
-	 * @return the set of conclusions without which the goal would not be
+	 * @return the set of axioms from an the ontology without which the goal would not be
 	 *         derivable using the given inferences; i.e., every derivation
-	 *         using the inferences must use at least one essential conclusion
+	 *         using the inferences must start with an inference with conclusion contained in the set
 	 */
-	public static <C, I extends Inference<? extends C>> Set<C> getEssential(Proof<? extends I> proof,
+	public static <C, I extends Inference<? extends C>> Set<C> getEssentialAxioms(Proof<? extends I> proof,
 			C goal,Set<C> ontology) {
 		
 		Set<C> result = new HashSet<C>();
 		for (C candidate : ontology) {
-			DerivabilityCheckerWithBlocking<C,I> checker = new InferenceDerivabilityChecker<C, I>(proof);
+			DerivabilityCheckerWithBlocking<C,I> checker = new AxiomDerivabilityChecker<C,I>(proof);
+//			DerivabilityCheckerWithBlocking<C,I> checker = new InferenceDerivabilityChecker<C,I>(proof);
+
 			checker.block(candidate);
 			if (!checker.isDerivable(goal)) {
 				result.add(candidate);
