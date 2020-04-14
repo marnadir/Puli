@@ -175,6 +175,33 @@ public class Proofs {
 		return result;
 	}
 
+	
+	public static <C, I extends Inference<? extends C>> Set<C> getAxiomsOntology(
+			Proof<? extends I> proof, C goal) {
+		Set<C> conclusions = new HashSet<C>();
+		Set<C> result = new HashSet<C>();
+		Queue<C> toExpand = new ArrayDeque<C>();
+		conclusions.add(goal);
+		toExpand.add(goal);
+		for (;;) {
+			C next = toExpand.poll();
+			if (next == null) {
+				break;
+			}
+			for (I inf : proof.getInferences(next)) {
+				if(inf.getPremises().size()==0) {
+					result.add(inf.getConclusion());
+				}
+				for (C premise : inf.getPremises()) {
+					if (conclusions.add(premise)) {
+						toExpand.add(premise);
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * @param proof
 	 * @param goal
@@ -200,13 +227,12 @@ public class Proofs {
 	 *         using the inferences must start with an inference with conclusion contained in the set
 	 */
 	public static <C, I extends Inference<? extends C>> Set<C> getEssentialAxioms(Proof<? extends I> proof,
-			C goal,Set<C> ontology) {
+			C goal) {
 		
 		Set<C> result = new HashSet<C>();
-		for (C candidate : ontology) {
+		Set<C> axioms=getAxiomsOntology(proof, goal);
+		for (C candidate : axioms) {
 			DerivabilityCheckerWithBlocking<C,I> checker = new AxiomDerivabilityChecker<C,I>(proof);
-//			DerivabilityCheckerWithBlocking<C,I> checker = new InferenceDerivabilityChecker<C,I>(proof);
-
 			checker.block(candidate);
 			if (!checker.isDerivable(goal)) {
 				result.add(candidate);
@@ -261,8 +287,8 @@ public class Proofs {
 	 * @see Inferences#isAsserted(Inference)
 	 */
 	public static <C,I extends Inference<? extends C>> Proof<I> prune(
-			Proof<? extends I> proof, C goal,Set<C> ontology) {
-		return new PrunedProof<C,I>(proof, goal,ontology);
+			Proof<? extends I> proof, C goal) {
+		return new PrunedProof<C,I>(proof, goal);
 	}
 
 	/**
@@ -279,8 +305,8 @@ public class Proofs {
 	 */
 	
 	public static <C, I extends Inference<? extends C>> Proof<I> pruneCycle
-	(Proof<I> proof, C goal,Set<C> ontology) {
-		return new PrunedProofCycle<C,I>(proof, goal,ontology);
+	(Proof<I> proof, C goal) {
+		return new PrunedProofCycle<C,I>(proof, goal);
 	}
 	
 	

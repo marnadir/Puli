@@ -22,38 +22,27 @@ package org.liveontologies.puli;
  * #L%
  */
 
-
-
 import java.util.Collection;
 import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-
-public class PrunedProofJust<I extends Inference<?>>
-		extends DelegatingProof<I, Proof<? extends I>>
+public class PrunedProofJust<I extends Inference<?>> extends DelegatingProof<I, Proof<? extends I>>
 		implements Proof<I>, Producer<I> {
 
-	
-	
-	private final Multimap<Object, I> expandedJust_ = ArrayListMultimap
-			.create();
+	private final Multimap<Object, I> expandedJust_ = ArrayListMultimap.create();
 	private Set<Object> essentialAxiom;
 	private Set<Object> justUnion;
 
-	public PrunedProofJust(Proof<? extends I> delegate, Object goal,Set<Object> justUnion) {
+	public PrunedProofJust(Proof<? extends I> delegate, Object goal, Set<Object> justUnion) {
 		super(delegate);
-		this.justUnion=justUnion;
-		Proofs.expand(justUnion,Proofs.removeAssertedInferences(delegate),
-				goal, this);
-		expandedJust_.clear(); //not neccessary
-		cuteInferences(delegate,justUnion);
+		this.justUnion = justUnion;
+		Proofs.expand(justUnion, Proofs.removeAssertedInferences(delegate), goal, this);
+		expandedJust_.clear(); // not necessary
+		cuteInferences(delegate, justUnion);
 	}
 
-	
-	
-	
 	@Override
 	public void produce(I inf) {
 		expandedJust_.put(inf.getConclusion(), inf);
@@ -63,14 +52,12 @@ public class PrunedProofJust<I extends Inference<?>>
 	public Collection<? extends I> getInferences(Object conclusion) {
 		Collection<? extends I> infs = expandedJust_.get(conclusion);
 		// multimap return 0 if the empty collection if the key is not present
-		if (infs.size()==0) {
+		if (infs.size() == 0) {
 			return super.getInferences(conclusion);
 		}
 		// else
 		return infs;
 	}
-
-
 
 	public Set<Object> getEssentialAxiom() {
 		return essentialAxiom;
@@ -83,12 +70,11 @@ public class PrunedProofJust<I extends Inference<?>>
 	public Multimap<Object, I> getExpandedJust_() {
 		return expandedJust_;
 	}
-	
-	
-	void cuteInferences(Proof<? extends I> proof_,Set<Object> justUnion) {
-		for(Object just:justUnion) {
+
+	void cuteInferences(Proof<? extends I> proof_, Set<Object> justUnion) {
+		for (Object just : justUnion) {
 			for (I inf : proof_.getInferences(just)) {
-				if(justUnion.containsAll(inf.getPremises())) {
+				if (justUnion.containsAll(inf.getPremises())) {
 					produce(inf);
 				}
 			}

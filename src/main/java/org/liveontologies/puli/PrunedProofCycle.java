@@ -39,8 +39,7 @@ public class PrunedProofCycle<C,I extends Inference<?>>
 	private Set<C> essential;
 	private Set<I> infC_=new HashSet<I>();
 
-
-	public PrunedProofCycle(Proof<? extends I> delegate, Object goal,Set<C> ontology) {
+	public PrunedProofCycle(Proof<? extends I> delegate, Object goal) {
 		super(delegate);	
 		Proofs.detectCycle(delegate, goal, this);
 		

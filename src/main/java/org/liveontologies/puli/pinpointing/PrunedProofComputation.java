@@ -35,18 +35,16 @@ public class PrunedProofComputation <C, I extends Inference<? extends C>> {
 	private final PruneType pruneType_;
 	private Proof<? extends I> proof_;
 	private final C query;
-	private final Set<C> ontology;
 	private final Set<Object> justUnion;
 
 
 	
 	public PrunedProofComputation(final Proof<? extends I> proof,
-			final InterruptMonitor monitor, final PruneType pruneType,final C query,final Set<C> ontology,Set<Object> just) {
+			final InterruptMonitor monitor, final PruneType pruneType,final C query,Set<Object> just) {
 		
 		this.proof_ = proof;
 		this.pruneType_=pruneType;
 		this.query=query;
-		this.ontology=ontology;
 		this.justUnion=just;
 	}
 	
@@ -59,19 +57,19 @@ public class PrunedProofComputation <C, I extends Inference<? extends C>> {
 		
 		switch (pruneType_) {
 		case ESS_PRUNE:
-				proof_=Proofs.prune(proof_, query, ontology);
+				proof_=Proofs.prune(proof_, query);
 			break;
 		case CYC_PRUNE:
-				proof_=Proofs.pruneCycle(proof_, query, ontology);
+				proof_=Proofs.pruneCycle(proof_, query);
 			break;
 			
 		case ESSCYC_PRUNE:
-			proof_=Proofs.prune(proof_, query, ontology);
-			proof_=Proofs.pruneCycle(proof_, query, ontology);
+			proof_=Proofs.prune(proof_, query);
+			proof_=Proofs.pruneCycle(proof_, query);
 			break;
 		case JUST_PRUNE:
-			proof_=Proofs.prune(proof_, query, ontology);
-			proof_=Proofs.pruneCycle(proof_, query, ontology);
+			proof_=Proofs.prune(proof_, query);
+			proof_=Proofs.pruneCycle(proof_, query);
 			proof_=Proofs.pruneFromJustifications(proof_, query, justUnion);
 			break;
 		
