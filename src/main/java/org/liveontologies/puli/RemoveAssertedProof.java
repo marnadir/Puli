@@ -23,6 +23,9 @@ package org.liveontologies.puli;
 
 import java.util.Set;
 
+import org.semanticweb.elk.owlapi.proofs.ElkOwlInference;
+
+
 class RemoveAssertedProof<I extends Inference<?>> extends FilteredProof<I> {
 
 	private final Set<?> assertedConclusions_;
@@ -35,8 +38,22 @@ class RemoveAssertedProof<I extends Inference<?>> extends FilteredProof<I> {
 
 	@Override
 	public boolean apply(I inference) {
-		return !Inferences.isAsserted(inference)
-				|| assertedConclusions_.contains(inference.getConclusion());
+//		return !Inferences.isAsserted(inference)
+//				|| assertedConclusions_.contains(inference.getConclusion());
+		
+		boolean result=assertedConclusions_.contains(inference.getConclusion()) 
+				&& inference.getPremises().size()==0;
+		if(inference instanceof ElkOwlInference) {
+			return  !result || !Inferences.isAsserted(inference);
+		}
+		return  !result;
 	}
 
+
 }
+
+
+
+
+
+

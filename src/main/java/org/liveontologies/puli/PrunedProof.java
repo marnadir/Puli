@@ -34,11 +34,13 @@ public class PrunedProof<C,I extends Inference<? extends C>>
 
 	private final Map<Object, I> expanded_ = new HashMap<Object, I>();
 	private Set<C> essential;
+	Set<C> axiomsFromOntology;
 
 	public PrunedProof(Proof<? extends I> delegate, C goal) {
 		super(delegate);
-		essential = Proofs.getEssentialAxioms(delegate, goal);
-		Proofs.expand(essential,Proofs.removeAssertedInferences(delegate),
+		axiomsFromOntology=Proofs.getAxiomsOntology(delegate, goal);
+		essential = Proofs.getEssentialAxioms(delegate, goal,axiomsFromOntology);
+		Proofs.expand(essential,Proofs.removeAssertedInferences(delegate,axiomsFromOntology),
 				goal, this);
 	}
 

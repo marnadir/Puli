@@ -142,10 +142,9 @@ public class AxiomDerivabilityChecker<C, I extends Inference<? extends C>>
 	public boolean isDerivable(C conclusion) {
 		LOGGER_.trace("{}: checking derivability", conclusion);
 		initBlocking();
-		toCheck(conclusion,null);
+		toCheck(conclusion);
 		process();
-		boolean derivable = derivable_.contains(conclusion)
-				&& !blocked_.contains(conclusion);
+		boolean derivable = derivable_.contains(conclusion);
 		LOGGER_.trace("{}: derivable: {}", conclusion, derivable);
 		return derivable;
 	}
@@ -237,6 +236,15 @@ public class AxiomDerivabilityChecker<C, I extends Inference<? extends C>>
 		}
 	}
 
+	
+	private void toCheck(C conclusion) {
+		if (goals_.add(conclusion)) {
+			LOGGER_.trace("{}: new goal", conclusion);
+			toCheck_.addFirst(conclusion);
+		}
+	}
+	
+	
 	private void toCheck(C conclusion,I inf) {
 		if (goals_.add(conclusion)) {
 			LOGGER_.trace("{}: new goal", conclusion);

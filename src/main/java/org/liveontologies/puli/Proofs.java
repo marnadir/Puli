@@ -227,11 +227,10 @@ public class Proofs {
 	 *         using the inferences must start with an inference with conclusion contained in the set
 	 */
 	public static <C, I extends Inference<? extends C>> Set<C> getEssentialAxioms(Proof<? extends I> proof,
-			C goal) {
+			C goal,Set<C> ontology) {
 		
 		Set<C> result = new HashSet<C>();
-		Set<C> axioms=getAxiomsOntology(proof, goal);
-		for (C candidate : axioms) {
+		for (C candidate : ontology) {
 			DerivabilityCheckerWithBlocking<C,I> checker = new AxiomDerivabilityChecker<C,I>(proof);
 			checker.block(candidate);
 			if (!checker.isDerivable(goal)) {
