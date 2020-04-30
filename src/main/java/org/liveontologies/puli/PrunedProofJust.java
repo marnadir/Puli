@@ -37,8 +37,9 @@ public class PrunedProofJust<I extends Inference<?>> extends DelegatingProof<I, 
 
 	public PrunedProofJust(Proof<? extends I> delegate, Object goal, Set<Object> justUnion) {
 		super(delegate);
+		
 		this.justUnion = justUnion;
-		Proofs.expand(justUnion, Proofs.removeAssertedInferences(delegate), goal, this);
+		Proofs.expand(justUnion, Proofs.removeAssertedInferences(delegate,Proofs.getAxiomsOntology(delegate, goal)), goal, this);
 		expandedJust_.clear(); // not necessary
 		cuteInferences(delegate, justUnion);
 	}
