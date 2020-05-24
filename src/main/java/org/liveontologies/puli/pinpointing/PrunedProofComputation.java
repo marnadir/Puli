@@ -57,18 +57,18 @@ public class PrunedProofComputation <C, I extends Inference<? extends C>> {
 		
 		switch (pruneType_) {
 		case ESS_PRUNE:
-				proof_=Proofs.prune(proof_, query);
+				proof_=Proofs.pruneEssential(proof_, query);
 			break;
 		case CYC_PRUNE:
 				proof_=Proofs.pruneCycle(proof_, query);
 			break;
 			
 		case ESSCYC_PRUNE:
-			proof_=Proofs.prune(proof_, query);
+			proof_=Proofs.pruneEssential(proof_, query);
 			proof_=Proofs.pruneCycle(proof_, query);
 			break;
 		case JUST_PRUNE:
-			proof_=Proofs.prune(proof_, query);
+			proof_=Proofs.pruneEssential(proof_, query);
 			proof_=Proofs.pruneCycle(proof_, query);
 			proof_=Proofs.pruneFromJustifications(proof_, query, justUnion);
 			break;

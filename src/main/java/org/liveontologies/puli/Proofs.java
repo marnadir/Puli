@@ -285,9 +285,9 @@ public class Proofs {
 	 *         returned proof
 	 * @see Inferences#isAsserted(Inference)
 	 */
-	public static <C,I extends Inference<? extends C>> Proof<I> prune(
+	public static <C,I extends Inference<? extends C>> Proof<I> pruneEssential(
 			Proof<? extends I> proof, C goal) {
-		return new PrunedProof<C,I>(proof, goal);
+		return new PrunedProofEssential<C,I>(proof, goal);
 	}
 
 	/**

@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class PrunedProof<C,I extends Inference<? extends C>>
+public class PrunedProofEssential<C,I extends Inference<? extends C>>
 		extends DelegatingProof<I, Proof<? extends I>>
 		implements Proof<I>, Producer<I> {
 
@@ -36,7 +36,7 @@ public class PrunedProof<C,I extends Inference<? extends C>>
 	private Set<C> essential;
 	Set<C> axiomsFromOntology;
 
-	public PrunedProof(Proof<? extends I> delegate, C goal) {
+	public PrunedProofEssential(Proof<? extends I> delegate, C goal) {
 		super(delegate);
 		axiomsFromOntology=Proofs.getAxiomsOntology(delegate, goal);
 		essential = Proofs.getEssentialAxioms(delegate, goal,axiomsFromOntology);

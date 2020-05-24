@@ -46,7 +46,7 @@ public class PrunedProofTest {
 
 		System.out.println(Proofs.getEssentialAxioms(proof, "G",Proofs.getAxiomsOntology(proof, "G")));
 
-		prunedProof=Proofs.prune(proof, "G");
+		prunedProof=Proofs.pruneEssential(proof, "G");
 		assertTrue(Proofs.isDerivable(prunedProof, "G"));
 		
 
