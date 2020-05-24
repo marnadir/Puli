@@ -38,8 +38,6 @@ class RemoveAssertedProof<I extends Inference<?>> extends FilteredProof<I> {
 
 	@Override
 	public boolean apply(I inference) {
-//		return !Inferences.isAsserted(inference)
-//				|| assertedConclusions_.contains(inference.getConclusion());
 		
 		boolean result=assertedConclusions_.contains(inference.getConclusion()) 
 				&& inference.getPremises().size()==0;
