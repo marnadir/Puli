@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class PrunedProofEssential<C,I extends Inference<? extends C>>
@@ -34,13 +35,15 @@ public class PrunedProofEssential<C,I extends Inference<? extends C>>
 
 	private final Map<Object, I> expanded_ = new HashMap<Object, I>();
 	private Set<C> essential;
-	Set<C> axiomsFromOntology;
+	private Set<Object> derivableConclusion;
+	private Set<C> axiomsFromOntology;
 
 	public PrunedProofEssential(Proof<? extends I> delegate, C goal) {
 		super(delegate);
 		axiomsFromOntology=Proofs.getAxiomsOntology(delegate, goal);
 		essential = Proofs.getEssentialAxioms(delegate, goal,axiomsFromOntology);
-		Proofs.expand(essential,Proofs.removeAssertedInferences(delegate,axiomsFromOntology),
+		derivableConclusion=essential.stream().collect(Collectors.toSet());	
+		Proofs.expand(derivableConclusion,Proofs.removeAssertedInferences(delegate,axiomsFromOntology),
 				goal, this);
 	}
 
@@ -67,6 +70,8 @@ public class PrunedProofEssential<C,I extends Inference<? extends C>>
 		return essential;
 	}
 	
-	
+	public Set<Object> getDerivable() {
+		return derivableConclusion;
+	}
 
 }
