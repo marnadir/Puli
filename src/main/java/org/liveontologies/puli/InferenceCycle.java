@@ -32,7 +32,7 @@ class InferenceCycle<C, I extends Inference<? extends C>>
 		implements Producer<I> {
 
 
-	private final Set<I> infCycle_=new HashSet<I>();
+	private Set<I> infCycle_=new HashSet<I>();
 
 	
 	private final Proof<? extends I> proof_;
@@ -45,9 +45,10 @@ class InferenceCycle<C, I extends Inference<? extends C>>
 	
 
 	InferenceCycle( Proof<? extends I> proof, C goal,
-			Producer<? super I> producer) {
+			Producer<? super I> producer,Set<I> infCycle) {
 		this.proof_ = proof;
 		this.producer_ = producer;
+		this.infCycle_=infCycle;
 		checker = new InferenceDerivabilityChecker<C, I>(proof);
 		process(goal);
 		
@@ -55,8 +56,8 @@ class InferenceCycle<C, I extends Inference<? extends C>>
 
 	public static <C, I extends Inference<? extends C>> void detectCycle(
 			 Proof<? extends I> proof, C goal,
-			Producer<? super I> producer) {
-		new InferenceCycle<C, I>(proof, goal, producer);
+			Producer<? super I> producer,Set<I> infCycle) {
+		new InferenceCycle<C, I>(proof, goal, producer,infCycle);
 	}
 
 	void process(C goal) {
@@ -90,3 +91,4 @@ class InferenceCycle<C, I extends Inference<? extends C>>
 	
 	
 }
+

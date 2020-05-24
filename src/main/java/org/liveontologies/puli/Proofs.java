@@ -269,8 +269,8 @@ public class Proofs {
 	 * @param producer
 	 */	
 	public static <C, I extends Inference<? extends C>> void detectCycle(Proof<? extends I> proof, C goal,
-			Producer<? super I> producer) {
-		InferenceCycle.detectCycle(proof, goal, producer);
+			Producer<? super I> producer,Set<I> infCycle_) {
+		InferenceCycle.detectCycle(proof, goal, producer,infCycle_);
 	}
 
 	/**

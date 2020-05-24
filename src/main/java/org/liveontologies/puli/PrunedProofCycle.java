@@ -36,12 +36,11 @@ public class PrunedProofCycle<C,I extends Inference<?>>
 
 	private final Multimap<Object, I> expandedJust_ = ArrayListMultimap
 			.create();
-	private Set<C> essential;
-	private Set<I> infC_=new HashSet<I>();
+	private Set<I> infCycle_=new HashSet<I>();
 
 	public PrunedProofCycle(Proof<? extends I> delegate, Object goal) {
 		super(delegate);	
-		Proofs.detectCycle(delegate, goal, this);
+		Proofs.detectCycle(delegate, goal, this,infCycle_);
 		
 	}
 
@@ -60,17 +59,9 @@ public class PrunedProofCycle<C,I extends Inference<?>>
 		return infs;
 	}
 
-	
-	public Set<C> getEssential() {
-		return essential;
-	}
-
 	public Set<I> getInferenceCyc() {
-		return infC_;
+		return infCycle_;
 	}
-
-
-	
 
 }
 
