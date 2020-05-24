@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
+import org.semanticweb.elk.reasoner.indexing.model.IndexedAxiom;
+
 /**
  * A collection of static methods for working with {@link Proof}s
  * 
@@ -202,6 +204,50 @@ public class Proofs {
 		return result;
 	}
 	
+	
+	public static <C, I extends Inference<? extends C>> Set<C> unfoldInfs(
+			Proof<? extends I> proof, C goal,Set<C> just ) {
+		Set<C> result = new HashSet<C>();
+		Set<C> newJust = new HashSet<C>();
+		newJust.addAll(just);		
+		Queue<C> toExpand = new ArrayDeque<C>();
+		result.add(goal);
+		toExpand.add(goal);
+		for (;;) {
+			C next = toExpand.poll();
+			if (next == null) {
+				break;
+			}
+			for (I inf : proof.getInferences(next)) {
+				for (C premise : inf.getPremises()) {
+					if(just.contains(premise)) {
+						newJust.addAll(inf.getPremises());
+					}
+					if (result.add(premise)) {
+						toExpand.add(premise);
+					}
+				}
+			}
+		}
+
+		return newJust;
+	}
+	
+	public static <C, I extends Inference<? extends C>> Set<C> convertElkJust(
+			Proof<? extends I> proof, C goal,Set<C> ontology,Set<C> just) {
+		Set<C> result = new HashSet<C>();
+		for(C axiom:ontology) {
+			if(axiom instanceof IndexedAxiom) {
+				if(just.contains(((IndexedAxiom) axiom).getOriginalAxiom())) {
+					result.add(axiom);
+				}
+			}
+			
+		}
+		return result;
+	}
+	
+	
 	/**
 	 * @param proof
 	 * @param goal
@@ -309,9 +355,10 @@ public class Proofs {
 	}
 	
 	
+
 	public static <C, I extends Inference<? extends C>> Proof<I> pruneFromJustifications
-	(Proof<I> proof, C goal,Set<Object> justifications) {
-		return new PrunedProofJust<I>(proof, goal,justifications);
+	(Proof<? extends I> proof_, C query,Set<Object> justifications,Proof<? extends I> proofType) {
+		return new PrunedProofJust<I>(proof_, query,justifications,proofType);
 	}
 	
 	/**

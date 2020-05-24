@@ -68,9 +68,10 @@ public class PrunedProofComputation <C, I extends Inference<? extends C>> {
 			proof_=Proofs.pruneCycle(proof_, query);
 			break;
 		case JUST_PRUNE:
+			Proof<? extends I> proofType=proof_;
 			proof_=Proofs.pruneEssential(proof_, query);
 			proof_=Proofs.pruneCycle(proof_, query);
-			proof_=Proofs.pruneFromJustifications(proof_, query, justUnion);
+			proof_=Proofs.pruneFromJustifications(proof_, query, justUnion,proofType);
 			break;
 		
 		default:

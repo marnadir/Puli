@@ -25,6 +25,8 @@ package org.liveontologies.puli;
 import java.util.Collection;
 import java.util.Set;
 
+import org.semanticweb.elk.proofs.InternalProof;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -32,14 +34,20 @@ public class PrunedProofJust<I extends Inference<?>> extends DelegatingProof<I, 
 		implements Proof<I>, Producer<I> {
 
 	private final Multimap<Object, I> expandedJust_ = ArrayListMultimap.create();
-	private Set<Object> essentialAxiom;
-	private Set<Object> justUnion;
+	private Set<Object> ontology;
+	private Set<Object> unionJust;
+	
 
-	public PrunedProofJust(Proof<? extends I> delegate, Object goal, Set<Object> justUnion) {
+	public PrunedProofJust(Proof<? extends I> delegate, Object goal, Set<Object> justUnion,Proof<? extends I> proofType) {
 		super(delegate);
-		
-		this.justUnion = justUnion;
-		Proofs.expand(justUnion, Proofs.removeAssertedInferences(delegate,Proofs.getAxiomsOntology(delegate, goal)), goal, this);
+		this.ontology=Proofs.getAxiomsOntology(delegate, goal);
+		this.unionJust=justUnion;
+		//Elk Proofs
+		if(proofType instanceof InternalProof) {
+			justUnion = Proofs.convertElkJust(delegate, goal, ontology, justUnion);
+			justUnion=Proofs.unfoldInfs(delegate, goal, justUnion);	
+		}
+		Proofs.expand(justUnion, Proofs.removeAssertedInferences(delegate,ontology), goal, this);
 		expandedJust_.clear(); // not necessary
 		cuteInferences(delegate, justUnion);
 	}
@@ -60,12 +68,11 @@ public class PrunedProofJust<I extends Inference<?>> extends DelegatingProof<I, 
 		return infs;
 	}
 
-	public Set<Object> getEssentialAxiom() {
-		return essentialAxiom;
-	}
+	
+
 
 	public Set<Object> getEssential() {
-		return justUnion;
+		return unionJust;
 	}
 
 	public Multimap<Object, I> getExpandedJust_() {
