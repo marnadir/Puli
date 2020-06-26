@@ -43,11 +43,14 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.SetMultimap;
 
 /**
- * A utility to check derivability of conclusions by inferences (in the presence
+ * A utility to check derivability of axioms of the ontology by inferences (in the presence
  * of blocked conclusions). A conclusion is derivable if it is not blocked and a
  * conclusion of an inference whose all premises are (recursively) derivable.
  * 
- * @author Yevgeny Kazakov
+ * N.B. similar to {@link InferenceDerivabilityChecker}, but here we need to to be careful if an axiom is 
+ * both contained in the ontology and derivable from the ontology using the inference set.
+ * 
+ * @author Marouane Nadir
  *
  * @param <C>
  *            the type of conclusions in inferences

@@ -29,6 +29,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.semanticweb.elk.reasoner.indexing.model.IndexedAxiom;
+import org.semanticweb.owlapi.debugging.JustificationMap;
 
 /**
  * A collection of static methods for working with {@link Proof}s
@@ -116,18 +117,6 @@ public class Proofs {
 			final Proof<? extends I> proof, final Set<?> assertedConclusions) {
 		return new RemoveAssertedProof<I>(proof, assertedConclusions);
 	}
-	/**
-	 * @param proof
-	 * @param assertedConclusions
-	 * @return the {@link Proof} that has all inferences of the given
-	 *         {@link Proof} except for the asserted inferences (inferences for
-	 *         which {@link Inferences#isAsserted(Inference)} returns
-	 *         {@code false}), whose conclusions are not in the given set.
-	 */
-	public static <C,I extends Inference<? extends C>> Proof<I> removeNotJust(final Proof<? extends I> proof,
-			final Set<C> axiomsNotJust,final Set<C> ontology) {
-		return new RemoveNotJust<C,I>(proof, axiomsNotJust, ontology);
-	}
 	
 	/**
 	 * @param proof
@@ -177,6 +166,21 @@ public class Proofs {
 		return result;
 	}
 
+	/**
+	 * Recursively enumerates all inferences of the given {@link Proof} starting
+	 * from the inferences for the given goal conclusion and then proceeding to
+	 * the inferences of their premises.The encountered inferences are reported
+	 * using the provided {@link Producer} by calling {@link Producer#produce}.
+	 * The inferences for each conclusion are enumerated only once even if the
+	 * conclusion appears as premise in several inferences. The method returns
+	 * the conclusions for which the inferences were enumerated which 
+	 * are contained in the ontology
+	 * 
+	 * @param proof
+	 * @param goal
+	 * @return the set of all conclusions, contained in the ontology, for which the inferences were
+	 *         enumerated
+	 */
 	
 	public static <C, I extends Inference<? extends C>> Set<C> getAxiomsOntology(
 			Proof<? extends I> proof, C goal) {
@@ -205,7 +209,7 @@ public class Proofs {
 	}
 	
 	
-	public static <C, I extends Inference<? extends C>> Set<C> unfoldInfs(
+	private static <C, I extends Inference<? extends C>> Set<C> unfoldInfs(
 			Proof<? extends I> proof, C goal,Set<C> just ) {
 		Set<C> result = new HashSet<C>();
 		Set<C> newJust = new HashSet<C>();
@@ -233,17 +237,27 @@ public class Proofs {
 		return newJust;
 	}
 	
+	/**
+	 * Convert the justifications which are given as OWL axioms to ELK axioms
+	 * @param proof
+	 * @param goal
+	 * @param ontology
+	 * @param justifications
+	 * @return justifications as ELK axioms
+	 */
+	
 	public static <C, I extends Inference<? extends C>> Set<C> convertElkJust(
-			Proof<? extends I> proof, C goal,Set<C> ontology,Set<C> just) {
+			Proof<? extends I> proof, C goal,Set<C> ontology,Set<C> justifications) {
 		Set<C> result = new HashSet<C>();
 		for(C axiom:ontology) {
 			if(axiom instanceof IndexedAxiom) {
-				if(just.contains(((IndexedAxiom) axiom).getOriginalAxiom())) {
+				if(justifications.contains(((IndexedAxiom) axiom).getOriginalAxiom())) {
 					result.add(axiom);
 				}
 			}
 			
 		}
+		result = unfoldInfs(proof, goal, result);
 		return result;
 	}
 	
@@ -316,14 +330,14 @@ public class Proofs {
 	 */	
 	public static <C, I extends Inference<? extends C>> void detectCycle(Proof<? extends I> proof, C goal,
 			Producer<? super I> producer,Set<I> infCycle_) {
-		InferenceCycle.detectCycle(proof, goal, producer,infCycle_);
+		InferenceCycleChecker.detectCycle(proof, goal, producer,infCycle_);
 	}
 
 	/**
 	 * @param proof
 	 * @param goal
 	 * @return a proof obtained from the given proofs by removing some
-	 *         inferences that do not have effect on the derivation relation
+	 *         inferences (according essential axiom) that do not have effect on the derivation relation
 	 *         between the asserted conclusions in the proof (derived by
 	 *         asserted inferences) and the goal conclusion; i.e., if the goal
 	 *         conclusion was derivable from some subset of asserted conclusions
@@ -354,8 +368,18 @@ public class Proofs {
 		return new PrunedProofCycle<C,I>(proof, goal);
 	}
 	
+	/**
+	 * @param proof
+	 * @param goal
+	 * @return a proof obtained from the given proofs by removing any 
+	 *         inferences that any premise is not derivable from 
+	 *         the justifications, i.e., if the goal
+	 *         conclusion was derivable from some subset of asserted conclusions
+	 *         using original inferences, then it is also derivable using the
+	 *         returned proof
+	 * @see Inferences#isAsserted(Inference)
+	 */
 	
-
 	public static <C, I extends Inference<? extends C>> Proof<I> pruneFromJustifications
 	(Proof<? extends I> proof_, C query,Set<Object> justifications,Proof<? extends I> proofType) {
 		return new PrunedProofJust<I>(proof_, query,justifications,proofType);

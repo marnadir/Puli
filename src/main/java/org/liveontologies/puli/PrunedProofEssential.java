@@ -28,6 +28,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Pruning proof based according essential conclusion criteria
+ * 
+ * @author Marouane Nadir
+ */
 
 public class PrunedProofEssential<C,I extends Inference<? extends C>>
 		extends DelegatingProof<I, Proof<? extends I>>
@@ -42,6 +47,7 @@ public class PrunedProofEssential<C,I extends Inference<? extends C>>
 		super(delegate);
 		axiomsFromOntology=Proofs.getAxiomsOntology(delegate, goal);
 		essential = Proofs.getEssentialAxioms(delegate, goal,axiomsFromOntology);
+		//used only to check the difference between essential and derivable conclusion sets
 		derivableConclusion=essential.stream().collect(Collectors.toSet());	
 		Proofs.expand(derivableConclusion,Proofs.removeAssertedInferences(delegate,axiomsFromOntology),
 				goal, this);

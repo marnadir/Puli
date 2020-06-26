@@ -22,6 +22,16 @@ package org.liveontologies.puli;
  * #L%
  */
 
+/**
+ * Pruning proof based on removing of cyclic inferences
+ * 
+ * @author Marouane Nadir
+ */
+/**
+ * Pruning proof based on removing of cyclic inferences
+ * 
+ * @author Marouane Nadir
+ */
 import java.util.Collection;
 import java.util.Set;
 
@@ -29,6 +39,12 @@ import org.semanticweb.elk.proofs.InternalProof;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
+/**
+ * Pruning proof based on removing inference which whose premises are not derivable from any justifications
+ * 
+ * @author Marouane Nadir
+ */
 
 public class PrunedProofJust<I extends Inference<?>> extends DelegatingProof<I, Proof<? extends I>>
 		implements Proof<I>, Producer<I> {
@@ -45,7 +61,6 @@ public class PrunedProofJust<I extends Inference<?>> extends DelegatingProof<I, 
 		//Elk Proofs
 		if(proofType instanceof InternalProof) {
 			justUnion = Proofs.convertElkJust(delegate, goal, ontology, justUnion);
-			justUnion=Proofs.unfoldInfs(delegate, goal, justUnion);	
 		}
 		Proofs.expand(justUnion, Proofs.removeAssertedInferences(delegate,ontology), goal, this);
 		expandedJust_.clear(); // not necessary

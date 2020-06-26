@@ -28,6 +28,17 @@ import org.liveontologies.puli.Proofs;
 import org.liveontologies.puli.PrunedProofCycle;
 import org.liveontologies.puli.PrunedProofEssential;
 
+/**
+ * Computing statistics about the pruning  proofs strategies.
+ * @author Marouane Nadir
+ * @param <C>
+ *            the type of conclusions used in inferences
+ * 
+ * @param <I>
+ *            the type of inferences used in the proof
+ */
+
+
 public class PrunedProofStats<C, I extends Inference<? extends C>> {
 
 	private Proof<? extends I> proof_;

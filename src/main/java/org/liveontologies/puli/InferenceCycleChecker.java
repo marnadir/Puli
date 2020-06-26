@@ -26,25 +26,44 @@ import java.util.HashSet;
 
 
 import java.util.Set;
+/**
+ * A utility to check cyclic inferences. A inference is cyclic if one of its premises is not derivable after the
+ * conclusion of the inference is blocked.
+ * 
+ * @author Marouane Nadir
+ *
+ * @param <C>
+ *            the type of conclusions in inferences
+ * @param <I>
+ *            the type of inferences in proofs
+ */
 
-
-class InferenceCycle<C, I extends Inference<? extends C>>
+class InferenceCycleChecker<C, I extends Inference<? extends C>>
 		implements Producer<I> {
 
-
+	/**
+	 * inferences that were found cyclic
+	 */
 	private Set<I> infCycle_=new HashSet<I>();
 
-	
+	/**
+	 * the inferences that can be used for deriving conclusions
+	 */
 	private final Proof<? extends I> proof_;
 	
+	/**
+	 * producer for the proof
+	 */
 	private final Producer<? super I> producer_;
 	
-	
-	DerivabilityCheckerWithBlocking<C,I> checker;
+	/**
+	 * checker for check the derivability of the premises
+	 */
+	private final DerivabilityCheckerWithBlocking<C,I> checker;
 
 	
 
-	InferenceCycle( Proof<? extends I> proof, C goal,
+	InferenceCycleChecker( Proof<? extends I> proof, C goal,
 			Producer<? super I> producer,Set<I> infCycle) {
 		this.proof_ = proof;
 		this.producer_ = producer;
@@ -57,7 +76,7 @@ class InferenceCycle<C, I extends Inference<? extends C>>
 	public static <C, I extends Inference<? extends C>> void detectCycle(
 			 Proof<? extends I> proof, C goal,
 			Producer<? super I> producer,Set<I> infCycle) {
-		new InferenceCycle<C, I>(proof, goal, producer,infCycle);
+		new InferenceCycleChecker<C, I>(proof, goal, producer,infCycle);
 	}
 
 	void process(C goal) {
@@ -78,7 +97,9 @@ class InferenceCycle<C, I extends Inference<? extends C>>
 		checker.unblock(conclusion);
 	}
 
-	
+	/**
+	 * remove all cyclic inference that were found
+	 */
 	void cuteCycleInferences() {
 		for(I infC:infCycle_) {
 			for(I inf:proof_.getInferences(infC.getConclusion())) {

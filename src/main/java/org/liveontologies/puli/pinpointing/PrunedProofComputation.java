@@ -1,7 +1,7 @@
 package org.liveontologies.puli.pinpointing;
 
 /*-
- * #%L
+ * #%L 
  * Proof Utility Library
  * $Id:$
  * $HeadURL:$
@@ -29,12 +29,30 @@ import org.liveontologies.puli.Inference;
 import org.liveontologies.puli.Proof;
 import org.liveontologies.puli.Proofs;
 
+/**
+ * Computing pruning  proofs strategy in base on which is chose.
+ * @author Marouane Nadir
+ * @param <C>
+ *            the type of conclusions used in inferences
+ * 
+ * @param <I>
+ *            the type of inferences used in the proof
+ */
+
+
 public class PrunedProofComputation <C, I extends Inference<? extends C>> {
 
-	
+	/**
+	 * type of pruning strategy which should be applied
+	 */
 	private final PruneType pruneType_;
+	
 	private Proof<? extends I> proof_;
 	private final C query;
+	
+	/**
+	 * union of justifications for the given query
+	 */
 	private final Set<Object> justUnion;
 
 

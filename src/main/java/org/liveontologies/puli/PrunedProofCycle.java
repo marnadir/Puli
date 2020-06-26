@@ -22,6 +22,13 @@ package org.liveontologies.puli;
  * #L%
  */
 
+/**
+ * Pruning proof based on removing of cyclic inferences
+ * 
+ * @author Marouane Nadir
+ */
+
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
